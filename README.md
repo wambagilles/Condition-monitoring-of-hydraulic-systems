@@ -53,6 +53,7 @@ git clone git@github.com:wambagilles/Tech_test_Dataswati_-by_VIF.git
 ```
 
 ### 2. Build the Docker Image
+1. Ensure that the data files (`PS2.txt`, `FS1.txt`, `profile.txt`) are placed in the `data_subset` folder.
 ```bash
 docker build -t valve-condition-app .
 ```
@@ -68,7 +69,7 @@ Navigate to `http://localhost:9696/make_prediction` in your browser. You can inp
 ## Model Training
 
 To train the model on the provided dataset:
-1. Ensure that the data files (`ps2.txt`, `fs1.txt`, `profile.txt`) are placed in the `data_subset` folder.
+1. Ensure that the data files (`PS2.txt`, `FS1.txt`, `profile.txt`) are placed in the `data_subset` folder.
 2. Run the training script:
    ```bash
    python main.py

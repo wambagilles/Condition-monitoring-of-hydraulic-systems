@@ -18,10 +18,10 @@ def read_and_parse_dataset():
     target.columns = ['not_optimal','optimal',]
 
 
-    pressure = pd.read_csv("data_subset/ps2.txt", header=None, sep='\t')
+    pressure = pd.read_csv("data_subset/PS2.txt", header=None, sep='\t')
     # Reduce the sample rate from 100 to 10
     pressure = pd.DataFrame(pressure.apply(downscale_sample_rate, axis=1).tolist())
-    volume_flow = pd.read_csv("data_subset/fs1.txt", header=None, sep='\t')
+    volume_flow = pd.read_csv("data_subset/FS1.txt", header=None, sep='\t')
 
     train_pressure, test_pressure = train_test_split(pressure, train_size=2000, shuffle=False)
     train_volume_flow, test_volume_flow = train_test_split(volume_flow, train_size=2000, shuffle=False)

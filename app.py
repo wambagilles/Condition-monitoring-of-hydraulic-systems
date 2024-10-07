@@ -15,6 +15,19 @@ app.config['SECRET_KEY'] = '1ca6614d8c88d67a9aab6fe9196f742ea4c1d583b1ca9f07'
 
 
 predictions = []
+device = 'cpu'
+n_var_in = 2 
+n_neurons_out = 2
+n_var_a_priori = 8
+MODEL_PATH = "checkpoints/model_20241007_202722_29"
+model = AutoLagNet( n_var_in, n_neurons_out, n_var_a_priori)
+model.load_state_dict(torch.load(MODEL_PATH, weights_only=True))
+model.eval()
+model.to(device)
+
+pressure_df = pd.read_csv("data_subset/PS2.txt", header=None, sep='\t')
+pressure_df = pd.DataFrame(pressure_df.apply(downscale_sample_rate, axis=1).tolist())
+volume_flow_df = pd.read_csv("data_subset/FS1.txt", header=None, sep='\t')
 
 @app.route('/')
 def index():
@@ -24,31 +37,15 @@ def index():
 # Define an endpoint for predictions
 @app.route('/predict', methods=['POST'])
 def predict():
-    device = 'cpu'
-    n_var_in = 2 
-    n_neurons_out = 2
-    n_var_a_priori = 8
-    MODEL_PATH = "checkpoints/model_20241007_202722_29"
-
-    render_template('make_prediction.html')
-
+    
     # Get cycle ID data from the request in JSON format
     cycle_id = request.get_json()["cycle_id"]
 
-    pressure = pd.read_csv("data_subset/ps2.txt", header=None, sep='\t')
-    pressure = pd.DataFrame(pressure.apply(downscale_sample_rate, axis=1).tolist())
-    volume_flow = pd.read_csv("data_subset/fs1.txt", header=None, sep='\t')
-
-    pressure = pressure.iloc[cycle_id].to_numpy()
-    volume_flow = volume_flow.iloc[cycle_id].to_numpy()
+    pressure = pressure_df.iloc[cycle_id].to_numpy()
+    volume_flow = volume_flow_df.iloc[cycle_id].to_numpy()
     encoder_input = np.array([volume_flow, pressure])
     a_priori_vars = np.array([compute_apriori_vars(volume_flow, pressure)])
 
-    model = AutoLagNet( n_var_in, n_neurons_out, n_var_a_priori)
-    model.load_state_dict(torch.load(MODEL_PATH, weights_only=True))
-    model.eval()
-    model.to(device)
-    
 
     with torch.no_grad():    
         pred = model(torch.from_numpy(encoder_input).unsqueeze(0).float(), torch.from_numpy(a_priori_vars).unsqueeze(0).float())
@@ -61,7 +58,6 @@ def predict():
         dumped = json.dumps(result, cls=NumpyEncoder)
 
        
-        print(result)
         return dumped
 
 
