@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Predictions {% endblock %}</h1>
+    {% for prediction in predictions %}
+        <div class='prediction'>
+            <h3>Cycle_id: {{ prediction['cycle_id'] }}</h3>
+            <h3>Predictions: {{ prediction['prediction'] }}</h3>
+            
+        </div>
+    {% endfor %}
+{% endblock %}
