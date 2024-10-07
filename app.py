@@ -28,7 +28,7 @@ def predict():
     n_var_in = 2 
     n_neurons_out = 2
     n_var_a_priori = 8
-    MODEL_PATH = "checkpoints/model_20241007_170626_13"
+    MODEL_PATH = "checkpoints/model_20241007_202722_29"
 
     render_template('make_prediction.html')
 

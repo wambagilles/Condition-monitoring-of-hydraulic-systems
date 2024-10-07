@@ -25,7 +25,7 @@ def train(model, train_loader, test_loader):
 
         # Make sure gradient tracking is on, and do a pass over the data
         model.train(True)
-        avg_loss = train_one_epoch(model, train_loader, epoch, loss_fn, optimizer, writer)
+        train_loss = train_one_epoch(model, train_loader, epoch, loss_fn, optimizer, writer)
 
 
         running_loss = 0.0
@@ -49,13 +49,13 @@ def train(model, train_loader, test_loader):
         avg_precision, avg_recall, avg_f1 = compute_metrics(torch.cat(output_list, axis=0), torch.cat(label_list, axis=0))
         avg_loss = running_loss / (i + 1)
 
-        print(f"LOSS train {avg_loss} valid {avg_loss}")
+        print(f"LOSS train {train_loss} valid {avg_loss}")
         print(f"Pecision: {avg_precision}, Recall: {avg_f1}, F1: {avg_f1}")
 
         # Log the running loss averaged per batch
         # for both training and validation
         writer.add_scalars('Training vs. Validation Loss',
-                        { 'Training' : avg_loss, 'Validation' : avg_loss },
+                        { 'Training' : train_loss, 'Validation' : avg_loss },
                         epoch_number + 1)
         writer.add_scalars('Precision', {'Precision' : avg_precision },
                         epoch_number + 1)
@@ -67,7 +67,7 @@ def train(model, train_loader, test_loader):
 
         # Track best performance, and save the model's state
         if avg_loss < best_loss:
-            best_vloss = avg_loss
+            best_loss = avg_loss
             model_path = 'checkpoints/model_{}_{}'.format(timestamp, epoch_number)
             torch.save(model.state_dict(), model_path)
 
@@ -77,7 +77,6 @@ def train(model, train_loader, test_loader):
 
 
 def train_one_epoch(model, training_loader, epoch_index, loss_fn, optimizer, tb_writer):
-    running_loss = 0.
     last_loss = 0.
 
     # Here, we want to track batches
@@ -94,18 +93,11 @@ def train_one_epoch(model, training_loader, epoch_index, loss_fn, optimizer, tb_
         outputs = outputs.flatten(1)
         loss = loss_fn(outputs, labels.float())
         loss.backward()
+        last_loss+=loss
 
         # Adjust learning weights
         optimizer.step()
 
-        # Gather data and report
-        running_loss += loss.item()
-        if i % 1000 == 999:
-            last_loss = running_loss / 1000 # loss per batch
-            print('  batch {} loss: {}'.format(i + 1, last_loss))
-            tb_x = epoch_index * len(training_loader) + i + 1
-            tb_writer.add_scalar('Loss/train', last_loss, tb_x)
-            running_loss = 0.
-    i+=1
+        i+=1
 
-    return last_loss
+    return last_loss/i*1.0

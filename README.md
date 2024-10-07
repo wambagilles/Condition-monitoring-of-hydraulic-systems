@@ -1,6 +1,9 @@
 # Auto-Lag Networks for Valve Condition Prediction
 
-This repository contains a machine learning solution to predict whether the valve condition of a hydraulic system is optimal (100%) or not, based on sensor data from 2000 cycles. The problem was modeled as a **multivariate time series** classification task task using **Auto-Lag Networks (ALNs) For Real Valued Sequence to Sequence Prediction**, which automatically learn relevant lag structures and make sequence-to-sequence predictions.
+This repository contains a machine learning solution to predict whether the valve condition of a hydraulic system is optimal (100%) or not, based on sensor data from 2000 cycles. 
+
+The problem was modeled as a **multivariate time series** classification task.
+I applied **Auto-Lag Networks (ALNs) For Real Valued Sequence to Sequence Prediction**, a novel archite, which automatically learn relevant lag structures and make sequence-to-sequence predictions.
 
 ## Problem Description
 
@@ -14,7 +17,9 @@ We aim to predict the valve condition (optimal or non-optimal) based on the foll
 ### Auto-Lag Networks (ALNs)
 The solution leverages Auto-Lag Networks, a specialized neural network architecture designed for real-valued sequence-to-sequence prediction. ALNs are ideal for this task because they can automatically select relevant time lags, eliminating the need for manual lag specification, which is crucial in time-series forecasting problems.
 
-As the author of the **Auto-Lag Networks (ALNs) For Real Valued Sequence to Sequence Prediction** paper, presented at ICANN 2019 in Berlin, this approach has been recognized for its ability to dynamically capture relevant temporal dependencies in time-series data, making it an excellent fit for this valve condition prediction challenge.
+A key feature of ALNet is its **attention layer**, which acts as an **auto-lag selector** within the observation window. This attention mechanism allows the model to dynamically focus on the most relevant time lags, making the architecture highly efficient and effective for complex time-series prediction tasks. This enables ALNet to outperform traditional methods that require manual lag determination, especially in scenarios involving irregular or high-frequency signals, such as pressure and volume flow data.
+
+As the author of the ALNet paper, presented at ICANN 2019 in Berlin, this approach has been recognized for its ability to dynamically capture relevant temporal dependencies in time-series data, making it an excellent fit for this valve condition prediction challenge. The problem is framed as a binary classification task, where the goal is to classify each cycle's valve condition as either "Optimal" or "Non-Optimal."
 
 ### Multivariate Time Series Model
 The model takes two time series as input (pressure and volume flow) and also computes additional features called **a_priori_vars**, which include statistics such as the mean, median, variance, and standard deviation for both time series. These features are incorporated into the network to improve prediction accuracy.
@@ -35,7 +40,9 @@ To ensure easy deployment, the application is containerized using **Docker**. Th
 - `metrics.py`: Computes several metrics to evaluate the model.
 - `Dockerfile`: Defines the Docker container configuration.
 - `templates/make_predictions.html`: HTML template for the prediction form.
-- `templates/make_predictions.html`: HTML template for displaying all the prédictions made.
+![Prediction Form](images/make_predictions.png)
+- `templates/index.html`: HTML template for displaying all the prédictions made.
+![Start Page of the Web App, listing the predictions](images/index.png)
 - `templates/base.html`: Base HTML web template.
 
 ## How to Run
@@ -67,6 +74,12 @@ To train the model on the provided dataset:
    python main.py
    ```
 
+Training the model for around 27 epochs with a batch size of 6 on the training set, consisting of the first 2000 cycles, resulted in a **Binary Cross-Entropy loss of 0.0006** on the test set. The evaluation on the test set was equally impressive, achieving **100% precision, recall, and F1 score**.
+
+![Trains vs Validation Loss](images/loss.png)
+
+These outstanding results not only highlight the efficiency of **Auto-Lag Networks**, but are also expected given the problem framing. By modeling the task as a **binary classification problem**, the challenge is simplified—any valve condition other than 100% is treated as non-optimal (0). This straightforward threshold makes classification easier, contributing to the model’s strong performance.
+
 The trained model will be saved in the `checkpoints` folder and can be loaded for predictions.
 
 ## Bonus Features
@@ -76,7 +89,9 @@ The trained model will be saved in the `checkpoints` folder and can be loaded fo
 
 ## Future Work
 - Improve the model accurance by expérimenting other ALNet architecures, Loss function, and standardize the input.
-- Add more extensive unit tests.
+- Add extensive unit tests as well as CI/CD pipelines (non regression, coverage) to ease deployment of the application.
+- Version the models and Dataset
+- Add monitoring solutions like MLFLOW
 - Deploy the app on a cloud platform for broader accessibility.
 
 
