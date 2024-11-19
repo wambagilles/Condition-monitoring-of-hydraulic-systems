@@ -3,7 +3,7 @@
 This repository contains a machine learning solution to predict whether the valve condition of a hydraulic system is optimal (100%) or not, based on sensor data from 2000 cycles. 
 
 The problem was modeled as a **multivariate time series** classification task.
-I applied **Auto-Lag Networks (ALNs) For Real Valued Sequence to Sequence Prediction**, a novel archite, which automatically learn relevant lag structures and make sequence-to-sequence predictions.
+I applied results from my paper **Auto-Lag Networks (ALNs) For Real Valued Sequence to Sequence Prediction**, a novel architecture, which automatically learn relevant lag structures and make sequence-to-sequence predictions.
 
 ## Problem Description
 
