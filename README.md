@@ -49,7 +49,7 @@ To ensure easy deployment, the application is containerized using **Docker**. Th
 
 ### 1. Clone the repository
 ```bash
-git clone git@github.com:wambagilles/Tech_test_Dataswati_-by_VIF.git
+git clone git@github.com:wambagilles/Condition-monitoring-of-hydraulic-systems.git
 ```
 
 ### 2. Build the Docker Image
